@@ -3,19 +3,24 @@
 
 # load ---------
 
+# packages needed to create the map
 library(tidyverse)
 library(urbnmapr)
 
+# read my datasets
 place_data <- read_csv("data/places.csv")
-
 ps_data <- read_csv("data/postsecondary.csv")
 
 # clean -------
 
+# clean up place data to join easily w/ urbnmapr data
 place_data_clean <- place_data %>%
+# change column name to match urbnmapr name  
   rename(state_name = state) %>%
+# change DC name to match urbnmapr data
   mutate(state_name = str_replace(state_name, "DC", "District of Columbia"))
 
+# join my place data w/ urbnmapr state data
 place_map_data <- states %>%
   left_join(place_data_clean, by = "state_name")
 
@@ -39,11 +44,13 @@ place_ps_map <- ggplot() +
        caption = "As of Fall 2019") + 
 # get rid of the background so it will look good on a slide
   theme_void()+
+# tidy up the placement of legend/title/caption
   theme(legend.position = c(.9,.4),
         text = element_text(size = 8),
         plot.title = element_text(hjust = 0.5),
         plot.caption = element_text(hjust = 0.5, face = "italic"))
 
+# save a static image of the map
 ggsave(filename = "place_ps_map.png", plot = place_ps_map,
        height = 5, width = 8, units = "in")
 
